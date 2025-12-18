@@ -1,20 +1,43 @@
-name: Build & Push Images
+name: Build and Push Docker Images
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main1
 
 jobs:
-  build:
+  docker:
+    name: Build & Push Docker Images
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - run: docker build -t loksaieta/api:latest -f docker/Dockerfile.api .
-      - run: docker build -t loksaieta/ui:latest -f docker/Dockerfile.ui .
-      - run: docker push loksaieta/api:latest
-      - run: docker push loksaieta/ui:latest
+    steps:
+    # 1️⃣ Checkout code
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # 2️⃣ Login to DockerHub
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # 3️⃣ Build API image
+    - name: Build API Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/loksai-api:latest -f docker/Dockerfile.api .
+
+    # 4️⃣ Build UI image
+    - name: Build UI Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/loksai-ui:latest -f docker/Dockerfile.ui .
+
+    # 5️⃣ Push API image
+    - name: Push API image
+      run: |
+        docker push ${{ secrets.DOCKER_USERNAME }}/loksai-api:latest
+
+    # 6️⃣ Push UI image
+    - name: Push UI image
+      run: |
+        docker push ${{ secrets.DOCKER_USERNAME }}/loksai-ui:latest
