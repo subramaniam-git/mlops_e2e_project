@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: api
-        image: subbu/api:latest
+        image: subbu:api
         ports:
         - containerPort: 8000
